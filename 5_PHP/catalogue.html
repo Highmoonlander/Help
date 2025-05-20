@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Catalogue - BookHaven</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>BookHaven</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="catalogue.html" class="active">Catalogue</a></li>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Register</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="catalogue-section">
+        <div class="container">
+            <h2>Book Catalogue</h2>
+            
+            <div class="filter-container">
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Search by title or author...">
+                    <button id="search-btn" class="btn-small">Search</button>
+                </div>
+                
+                <div class="category-filter">
+                    <label for="category-select">Filter by Category:</label>
+                    <select id="category-select">
+                        <option value="">All Categories</option>
+                        <option value="Fiction">Fiction</option>
+                        <option value="Science Fiction">Science Fiction</option>
+                        <option value="Fantasy">Fantasy</option>
+                        <option value="Romance">Romance</option>
+                    </select>
+                </div>
+                
+                <div class="sort-options">
+                    <label for="sort-select">Sort by:</label>
+                    <select id="sort-select">
+                        <option value="title_asc">Title (A-Z)</option>
+                        <option value="title_desc">Title (Z-A)</option>
+                        <option value="price_asc">Price (Low to High)</option>
+                        <option value="price_desc">Price (High to Low)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="book-grid" id="books-container">
+                <!-- Books will be loaded here via JavaScript -->
+                <div class="loading">Loading books...</div>
+            </div>
+            
+            <div class="pagination" id="pagination">
+                <!-- Pagination will be added here via JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 BookHaven. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryParam = urlParams.get('category');
+            
+            // Set initial filter values from URL parameters
+            if (categoryParam) {
+                document.getElementById('category-select').value = categoryParam;
+            }
+            
+            // Load books on page load
+            loadBooks();
+            
+            // Add event listeners for filters
+            document.getElementById('search-btn').addEventListener('click', loadBooks);
+            document.getElementById('category-select').addEventListener('change', loadBooks);
+            document.getElementById('sort-select').addEventListener('change', loadBooks);
+            
+            // Allow search on Enter key
+            document.getElementById('search-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    loadBooks();
+                }
+            });
+        });
+        
+        function loadBooks(page = 1) {
+            const searchQuery = document.getElementById('search-input').value;
+            const category = document.getElementById('category-select').value;
+            const sortOption = document.getElementById('sort-select').value;
+            
+            // Show loading indicator
+            document.getElementById('books-container').innerHTML = '<div class="loading">Loading books...</div>';
+            
+            // Build query string
+            let queryString = `get_books.php?page=${page}`;
+            if (searchQuery) queryString += `&search=${encodeURIComponent(searchQuery)}`;
+            if (category) queryString += `&category=${encodeURIComponent(category)}`;
+            if (sortOption) queryString += `&sort=${encodeURIComponent(sortOption)}`;
+            
+            fetch(queryString)
+                .then(response => response.json())
+                .then(data => {
+                    const booksContainer = document.getElementById('books-container');
+                    booksContainer.innerHTML = '';
+                    
+                    if (data.books.length === 0) {
+                        booksContainer.innerHTML = '<p>No books found matching your criteria.</p>';
+                        document.getElementById('pagination').innerHTML = '';
+                        return;
+                    }
+                    
+                    // Display books
+                    data.books.forEach(book => {
+                        const bookCard = document.createElement('div');
+                        bookCard.className = 'book-card';
+                        bookCard.innerHTML = `
+                            <div class="book-image">
+                                <img src="${book.image_url || 'images/placeholder.jpg'}" alt="${book.title}">
+                            </div>
+                            <div class="book-info">
+                                <h3>${book.title}</h3>
+                                <p class="author">by ${book.author}</p>
+                                <p class="price">$${book.price}</p>
+                                <p class="category">${book.category}</p>
+                                <p class="description">${book.description.substring(0, 100)}${book.description.length > 100 ? '...' : ''}</p>
+                                <button class="btn-small view-details" data-id="${book.id}">View Details</button>
+                            </div>
+                        `;
+                        booksContainer.appendChild(bookCard);
+                    });
+                    
+                    // Add event listeners to view details buttons
+                    document.querySelectorAll('.view-details').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const bookId = this.getAttribute('data-id');
+                            // You can implement a modal or redirect to a book details page
+                            alert(`Book details for ID: ${bookId} would be shown here.`);
+                        });
+                    });
+                    
+                    // Create pagination
+                    createPagination(data.total_pages, page);
+                })
+                .catch(error => {
+                    console.error('Error loading books:', error);
+                    document.getElementById('books-container').innerHTML = '<p>Error loading books. Please try again later.</p>';
+                });
+        }
+        
+        function createPagination(totalPages, currentPage) {
+            const paginationContainer = document.getElementById('pagination');
+            paginationContainer.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            // Previous button
+            if (currentPage > 1) {
+                const prevButton = document.createElement('button');
+                prevButton.className = 'pagination-btn';
+                prevButton.textContent = 'Previous';
+                prevButton.addEventListener('click', () => loadBooks(currentPage - 1));
+                paginationContainer.appendChild(prevButton);
+            }
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.className = i === parseInt(currentPage) ? 'pagination-btn active' : 'pagination-btn';
+                pageButton.textContent = i;
+                pageButton.addEventListener('click', () => loadBooks(i));
+                paginationContainer.appendChild(pageButton);
+            }
+            
+            // Next button
+            if (currentPage < totalPages) {
+                const nextButton = document.createElement('button');
+                nextButton.className = 'pagination-btn';
+                nextButton.textContent = 'Next';
+                nextButton.addEventListener('click', () => loadBooks(parseInt(currentPage) + 1));
+                paginationContainer.appendChild(nextButton);
+            }
+        }
+    </script>
+</body>
+</html>

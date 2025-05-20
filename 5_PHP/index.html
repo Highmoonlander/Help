@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookHaven - Your Online Bookstore</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>BookHaven</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="catalogue.html">Catalogue</a></li>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Register</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2>Discover Your Next Favorite Book</h2>
+                <p>Explore our vast collection of books from various genres.</p>
+                <a href="catalogue.html" class="btn">Browse Books</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="featured">
+        <div class="container">
+            <h2>Featured Books</h2>
+            <div class="book-grid" id="featured-books">
+                <!-- Featured books will be loaded here via JavaScript -->
+                <div class="loading">Loading featured books...</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="categories">
+        <div class="container">
+            <h2>Browse by Category</h2>
+            <div class="category-grid">
+                <div class="category-card">
+                    <h3>Fiction</h3>
+                    <a href="catalogue.html?category=Fiction" class="btn-small">View Books</a>
+                </div>
+                <div class="category-card">
+                    <h3>Science Fiction</h3>
+                    <a href="catalogue.html?category=Science%20Fiction" class="btn-small">View Books</a>
+                </div>
+                <div class="category-card">
+                    <h3>Fantasy</h3>
+                    <a href="catalogue.html?category=Fantasy" class="btn-small">View Books</a>
+                </div>
+                <div class="category-card">
+                    <h3>Romance</h3>
+                    <a href="catalogue.html?category=Romance" class="btn-small">View Books</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 BookHaven. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Load featured books on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFeaturedBooks();
+        });
+
+        function loadFeaturedBooks() {
+            fetch('get_books.php?featured=true')
+                .then(response => response.json())
+                .then(data => {
+                    const featuredBooksContainer = document.getElementById('featured-books');
+                    featuredBooksContainer.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        featuredBooksContainer.innerHTML = '<p>No featured books available.</p>';
+                        return;
+                    }
+                    
+                    // Display only 4 featured books
+                    const booksToShow = data.slice(0, 4);
+                    
+                    booksToShow.forEach(book => {
+                        const bookCard = document.createElement('div');
+                        bookCard.className = 'book-card';
+                        bookCard.innerHTML = `
+                            <div class="book-image">
+                                <img src="${book.image_url || 'images/placeholder.jpg'}" alt="${book.title}">
+                            </div>
+                            <div class="book-info">
+                                <h3>${book.title}</h3>
+                                <p class="author">by ${book.author}</p>
+                                <p class="price">$${book.price}</p>
+                                <a href="catalogue.html?book=${book.id}" class="btn-small">View Details</a>
+                            </div>
+                        `;
+                        featuredBooksContainer.appendChild(bookCard);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading featured books:', error);
+                    document.getElementById('featured-books').innerHTML = '<p>Error loading books. Please try again later.</p>';
+                });
+        }
+    </script>
+</body>
+</html>

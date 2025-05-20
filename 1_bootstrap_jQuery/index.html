@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EDI Relevance</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <style>
+    p {
+      text-align: justify;
+    }
+    li {
+      margin-left: 8px;
+      margin-right: 8px;
+    }
+
+    .badge-counter {
+      font-size: 0.7rem;
+      background-color: #e9b2b8;
+      margin-left: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container justify-content-center align-item-center my-4">
+    <div class="alert alert-primary text-center">
+      <h3>EDI Relevance in VIT</h3>
+    </div>
+
+    <ul class="nav nav-pills justify-content-center mb-4" id="ediTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="main-tab" data-bs-toggle="tab" data-bs-target="#main" type="button" role="tab">
+          Main <span class="badge bg-danger badge-counter" id="main-count">0</span>
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="why-tab" data-bs-toggle="tab" data-bs-target="#why" type="button" role="tab">
+          Why <span class="badge bg-danger badge-counter" id="why-count">0</span>
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="conclude-tab" data-bs-toggle="tab" data-bs-target="#conclude" type="button" role="tab">
+          Conclusion <span class="badge bg-danger badge-counter" id="conclude-count">0</span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content alert alert-info" id="ediTabContent">
+
+      <div class="tab-pane fade show active" id="main" role="tabpanel">
+        <h3>Main</h3>
+        <p>
+          The <strong>Engineering and Design Innovation (EDI)</strong> course is a crucial part of the curriculum at VIT, carrying 5 to 6 credits. It’s designed to push students beyond traditional classroom learning into a world of creativity, critical thinking, and hands-on engineering. 
+        </p>
+        <p>
+          Students are expected to identify real-world problems and come up with innovative, technology-driven solutions. This may include working on domains such as healthcare, agriculture, education, transportation, environment, sustainability, or even AI and automation. From conceptualization to implementation, the EDI project fosters the full lifecycle of innovation.
+        </p>
+        <p>
+          The process typically includes multiple phases like ideation, research, feasibility study, prototyping, testing, documentation, and final presentation. Students often collaborate in small teams and are guided by faculty mentors throughout the semester.
+        </p>
+      </div>
+
+      <div class="tab-pane fade" id="why" role="tabpanel">
+        <h3>Why EDI?</h3>
+        <p>
+          EDI stands out from regular coursework because it emphasizes <em>learning by doing</em>. It cultivates a mindset that’s essential in the modern world: the ability to identify problems, think creatively, and solve them with an engineering-first approach.
+        </p>
+        <p>
+          This course is a unique opportunity for students to build interdisciplinary skills — whether it’s coding, electronics, CAD modeling, data analysis, UX design, or product development. It also fosters essential soft skills like teamwork, leadership, time management, presentation skills, and effective communication.
+        </p>
+        <p>
+          Moreover, VIT encourages students to take part in national and international competitions such as Smart India Hackathon, Toycathon, and various innovation challenges using their EDI projects. Some students even file patents or convert their EDI work into research papers or startups.
+        </p>
+      </div>
+
+      <div class="tab-pane fade" id="conclude" role="tabpanel">
+        <h3>Conclusion</h3>
+        <p>
+          The EDI course is not just a graded academic requirement — it's an innovation journey. It allows students to apply engineering principles to real-world contexts and prepares them for the future, whether it's higher studies, entrepreneurship, or working in R&D-driven industries.
+        </p>
+        <p>
+          By the end of the course, students come away with more than just a working prototype. They gain a deeper understanding of design thinking, problem-solving, and how their ideas can impact society. It’s a stepping stone toward becoming thoughtful, responsible, and creative engineers.
+        </p>
+        <p>
+          Overall, EDI embodies the spirit of "learning through innovation," making it one of the most exciting and transformative experiences in a student's academic journey at VIT.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+  ></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      // Click counter map
+      const clickCounts = {
+        main: 0,
+        why: 0,
+        conclude: 0
+      };
+
+      $('.nav-link').on('click', function () {
+        const id = $(this).attr('id'); // e.g., 'main-tab'
+        const key = id.split('-')[0]; // get 'main', 'why', or 'conclude'
+        clickCounts[key]++;
+        console.log(`${key} tab clicked ${clickCounts[key]} times`);
+
+        // Update counter in badge
+        $(`#${key}-count`).text(clickCounts[key]);
+      });
+    });
+  </script>
+</body>
+</html>
